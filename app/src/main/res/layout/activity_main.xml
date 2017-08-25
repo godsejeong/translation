@@ -16,8 +16,16 @@
         android:text="번역하기"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
-        android:layout_marginLeft="145dp"
-        android:layout_marginTop="400dp"/>
+        android:layout_marginLeft="160dp"
+        android:layout_marginTop="490dp"/>
+
+    <Button
+        android:id="@+id/sound"
+        android:layout_marginLeft="200dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,36 +43,40 @@
             android:gravity="center"
             android:weightSum="3"
             android:orientation="vertical">
+
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:orientation="vertical"
-            android:layout_weight="1"
-            android:background="@drawable/box"
-            android:weightSum="5"
-            android:gravity="center"
-            >
-            <Spinner
-                android:id="@+id/befor_spinner"
-                android:gravity="top"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_marginRight="70dp"/>
 
-            <EditText
-                android:id="@+id/befor_text"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_gravity="center"
-                android:layout_weight="4"
+                android:layout_weight="1"
+                android:background="@drawable/box"
                 android:gravity="center"
-                android:hint="번역할 내용을 입력하세요"/>
-        </LinearLayout>
+                android:orientation="vertical"
+                android:weightSum="5"
+                >
+
+                <Spinner
+                    android:id="@+id/befor_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_weight="1"
+                    android:gravity="top"/>
+
+                <EditText
+                    android:id="@+id/befor_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="4"
+                    android:gravity="center"
+                    android:hint="번역할 내용을 입력하세요"/>
+            </LinearLayout>
+
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -98,13 +110,14 @@
                 android:weightSum="5"
                 android:gravity="center"
                 >
+
                 <Spinner
                     android:id="@+id/after_spinner"
-                    android:gravity="top"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
+                    android:layout_marginRight="30dp"
                     android:layout_weight="1"
-                    android:layout_marginRight="70dp"/>
+                    android:gravity="top"/>
 
                 <TextView
                     android:id="@+id/after_text"
@@ -112,9 +125,12 @@
                     android:layout_height="0dp"
                     android:layout_weight="4"
                     android:layout_gravity="center"
+                    android:textStyle="bold"
+                    android:textColor="#000000"
                     android:gravity="center"/>
 
             </LinearLayout>
+
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
