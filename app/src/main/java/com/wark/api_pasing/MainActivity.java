@@ -17,6 +17,9 @@ import android.widget.Toast;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -39,9 +42,11 @@ public class MainActivity extends AppCompatActivity {
     String Json;
     String source;
     String target;
+    String address_jsoup;
     private static String Id = "H_PGTxoOcanHVU_PmIHI";
     private static String Secret = "7LPxEe7szR";
-
+    Jsoup jsoup = new Jsoup();
+    Button button;
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,14 +56,12 @@ public class MainActivity extends AppCompatActivity {
         befor_spinner = (Spinner) findViewById(R.id.befor_spinner);
         after_spinner = (Spinner) findViewById(R.id.after_spinner);
         change = (Button) findViewById(R.id.change);
-
+        button = (Button) findViewById(R.id.sound);
         ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.select, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         befor_spinner.setAdapter(adapter);
         after_spinner.setAdapter(adapter);
 
-//        Jsoup jsoup = new Jsoup();
-//        Log.e("h2",jsoup.h2);
 
         befor_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             String a;
@@ -87,9 +90,11 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(),"중국어(긴체)",Toast.LENGTH_LONG).show();
                         source="zh-CN";
                         break;
+                    case "언어선택" :
+                        source="ko";
+                        break;
                     default:
                         Toast.makeText(getApplicationContext(),"언어를 선택해 주세요",Toast.LENGTH_LONG).show();
-                        source=null;
                         break;
                 }
             }
@@ -122,6 +127,13 @@ public class MainActivity extends AppCompatActivity {
                     case "중국어(간체)":
                         target="zh-CN";
                         break;
+                    case "언어선택" :
+                        target="en";
+                        break;
+                    default:
+                        Toast.makeText(getApplicationContext(),"언어를 선택해 주세요",Toast.LENGTH_LONG).show();
+
+                        break;
                 }
             }
 
@@ -131,6 +143,33 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new Thread() {
+                    public void run() {
+                        try {
+
+                            String text = URLEncoder.encode(befor.getText().toString(), "UTF-8");
+                            address_jsoup="http://dic.naver.com/search.nhn?dicQuery="+ text;
+                            Document doc = org.jsoup.Jsoup.connect(address_jsoup).header("User-Agent", "Chrome/19.0.1.84.52").get();
+                            Elements sound = doc.select("a").eq(29);
+
+                            for(Element el : sound) {
+                                Log.e("Hello", sound.attr("playlist"));
+                            }
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    }
+                }.start();
+
+
+
+        }
+        });
 
 
         change.setOnClickListener(new View.OnClickListener() {
