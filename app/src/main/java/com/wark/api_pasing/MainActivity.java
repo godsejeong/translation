@@ -3,6 +3,7 @@ package com.wark.api_pasing;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -43,10 +44,13 @@ public class MainActivity extends AppCompatActivity {
     String source;
     String target;
     String address_jsoup;
+    TextToSpeech tts;
+    boolean _ttsAcive = false;
     private static String Id = "H_PGTxoOcanHVU_PmIHI";
     private static String Secret = "7LPxEe7szR";
     Jsoup jsoup = new Jsoup();
     Button button;
+    String str;
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,8 +65,6 @@ public class MainActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         befor_spinner.setAdapter(adapter);
         after_spinner.setAdapter(adapter);
-
-
         befor_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             String a;
             @Override
@@ -136,115 +138,113 @@ public class MainActivity extends AppCompatActivity {
                         break;
                 }
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
         });
 
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new Thread() {
-                    public void run() {
-                        try {
-
-                            String text = URLEncoder.encode(befor.getText().toString(), "UTF-8");
-                            address_jsoup="http://dic.naver.com/search.nhn?dicQuery="+ text;
-                            Document doc = org.jsoup.Jsoup.connect(address_jsoup).header("User-Agent", "Chrome/19.0.1.84.52").get();
-                            Elements sound = doc.select("a").eq(29);
-
-                            for(Element el : sound) {
-                                Log.e("Hello", sound.attr("playlist"));
-                            }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    }
-                }.start();
-
-
-
-        }
-        });
-
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                final Handler handler = new Handler() {
+//                    public void handleMessage(Message msg) {
+//                    }
+//                    };
+//                new Thread() {
+//                    public void run() {
+//                        try {
+//                            String text = URLEncoder.encode(befor.getText().toString(), "UTF-8");
+//                            address_jsoup="http://dic.naver.com/search.nhn?dicQuery="+ text;
+//                            Document doc = org.jsoup.Jsoup.connect(address_jsoup).header("User-Agent", "Chrome/19.0.1.84.52").get();
+//                            Elements sound = doc.select("a").eq(29);
+//                            for(Element el : sound) {
+//                                Log.e("Hello", sound.attr("playlist"));
+//                            }
+//
+//                            Message msg = handler.obtainMessage();
+//                            handler.sendMessage(msg);
+//
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                    }
+//                }.start();
+//        }
+//        });
+////소리출력
 
         change.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-        final Handler handler = new Handler() {
-            public void handleMessage(Message msg) {
-                JSONParser parser = new JSONParser();
-                try {
-                    JSONObject obj = (JSONObject) parser.parse(Json);
-                    JSONObject message = (JSONObject) obj.get("message");
-                    JSONObject result = (JSONObject) message.get("result");
 
-                    String translatedText = (String) result.get("translatedText");
-                    after.setText(translatedText);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                } catch (NullPointerException e){
-                    Toast.makeText(getApplicationContext(),"지원하지 않습니다. 다시 선택해 주세요",Toast.LENGTH_SHORT).show();
-                }
+                final Handler handler = new Handler() {
+                    public void handleMessage(Message msg) {
+                        JSONParser parser = new JSONParser();
+                        try {
+                            JSONObject obj = (JSONObject) parser.parse(Json);
+                            JSONObject message = (JSONObject) obj.get("message");
+                            JSONObject result = (JSONObject) message.get("result");
+
+                            String translatedText = (String) result.get("translatedText");
+                            after.setText(translatedText);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        } catch (NullPointerException e) {
+                            Toast.makeText(getApplicationContext(), "지원하지 않습니다. 다시 선택해 주세요", Toast.LENGTH_SHORT).show();
+                        }
 
 
-            }
-        };
-
-        new Thread() {
-            public void run() {
-                try {
-                    String text = URLEncoder.encode(befor.getText().toString(), "UTF-8");
-
-                    String apiURL = "https://openapi.naver.com/v1/language/translate";
-                    URL url = new URL(apiURL);
-                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                    con.setRequestMethod("POST");
-                    con.setRequestProperty("X-Naver-Client-Id", Id);
-                    con.setRequestProperty("X-Naver-Client-Secret", Secret);
-                    // post request
-                    String postParams = "source="+ source + "&target="+target+"&text=" + text;
-                    con.setDoOutput(true);
-                    DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-                    wr.writeBytes(postParams);
-                    wr.flush();
-                    wr.close();
-                    int responseCode = con.getResponseCode();
-                    BufferedReader br;
-                    // 정상 호출
-                    if (responseCode == 200) { // 정상 호출
-                        br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                    } else {  // 에러 발생
-                        br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
                     }
-                    String inputLine;
-                    StringBuffer response = new StringBuffer();
-                    while ((inputLine = br.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-                    Json = response.toString();
-                    br.close();
-                    Log.e("Json",response.toString());
-                    Message msg = handler.obtainMessage();
-                    handler.sendMessage(msg);
+                };
 
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (ProtocolException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
+                new Thread() {
+                    public void run() {
+                        try {
+                            String text = URLEncoder.encode(befor.getText().toString(), "UTF-8");
+
+                            String apiURL = "https://openapi.naver.com/v1/language/translate";
+                            URL url = new URL(apiURL);
+                            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                            con.setRequestMethod("POST");
+                            con.setRequestProperty("X-Naver-Client-Id", Id);
+                            con.setRequestProperty("X-Naver-Client-Secret", Secret);
+                            // post request
+
+                            String postParams = "source=" + source + "&target=" + target + "&text=" + text;
+                            con.setDoOutput(true);
+                            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+                            wr.writeBytes(postParams);
+                            wr.flush();
+                            wr.close();
+                            int responseCode = con.getResponseCode();
+                            BufferedReader br;
+                            // 정상 호출
+                            if (responseCode == 200) { // 정상 호출
+                                br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                            } else {  // 에러 발생
+                                br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+                            }
+                            String inputLine;
+                            StringBuffer response = new StringBuffer();
+                            while ((inputLine = br.readLine()) != null) {
+                                response.append(inputLine);
+                            }
+                            Json = response.toString();
+                            br.close();
+                            Log.e("Json", response.toString());
+                            Message msg = handler.obtainMessage();
+                            handler.sendMessage(msg);
+
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        } catch (ProtocolException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }.start();
             }
         });
-
     }
 }
